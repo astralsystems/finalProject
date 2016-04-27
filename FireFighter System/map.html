@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html >
+
+<body>
+
+
+  <link rel="stylesheet" href="style.css">
+  <script src="js/prefixfree.min.js"></script>
+  <script src="http://maps.googleapis.com/maps/api/js?sensor=true&libraries=places,geometry"></script>
+<!-- Modified from Commute Progress Tracker Prototype by Johan Sundstrom codepen.io/johan/pen/FILzw/-->
+
+<div id="transit-wpr">
+</div>
+
+<div id="panel-wpr">
+  <div id="info">
+    <div>
+      <h2>Driving directions</h2>
+    </div>
+    <div>
+      <label>from:</label>
+      <input class="input" id="from" value="515 Loudon Road, Latham, NY, USA">
+    </div>
+    <div>
+      <label>to:</label>
+
+      <select class="input" id="to">
+        <option value="23 Jarose Place, Clifton Park, NY">23 Jarose Place, Clifton Park, NY</option>
+        <option value="64 Knollwood Avenue, Amsterdam, NY">64 Knollwood Avenue, Amsterdam, NY</option>
+        <option value="opel">Opel</option>
+        <option value="audi">Audi</option>
+      </select>
+
+
+    </div>
+    <div style="display:none;">Depart at <select id="depart"></select></div>
+    <div class="btn">
+      <button id="go">Get Directions</button>
+    </div>
+  </div>
+  <div id="map"></div>
+  <div id="panel"></div>
+</div>
+    <script src='http://d3js.org/d3.v3.min.js'></script>
+    <script src='https://github.com/johan/railroad-diagrams/raw/gh-pages/kdtree.js'></script>
+
+        <script src="js/index.js"></script>
+
+
+
+
+  </body>
+</html>

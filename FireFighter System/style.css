@@ -1,0 +1,249 @@
+/*
+CSS for the body - changing background color and text size
+*/
+body {background-color: rgba(255, 255, 255, 255);font-size: 16px;}
+/*
+CSS for the navbar - gradients and text
+*/
+.navbar-default{linear-gradient(to bottom,#d9534f 0,#d9534f 100%) !important;}
+.navbar-default .navbar-nav>li>a{color: black;}
+
+/*
+CSS for the general - alignments and height and width
+*/
+.aligncontent {width: 290px;margin: auto;text-align: left;}
+#labelfix {padding-left: 5px;}
+#block {display: block;}
+.floatRight {float: right;}
+#truckoption{padding-bottom: 20px;padding-left: 0px;}
+.resetFire {margin-left: 5px;}
+#truckCenter {text-align: center;}
+li {padding-bottom: 5px;}
+#last {padding-bottom: 30px;}
+#callsDrop {margin-bottom: 35px;}
+
+/*
+CSS for the buttons and checkbox - changes various settings for buttons
+*/
+.alignButton{text-align: center;}
+.marginButton{margin: 100px 10px 0px 10px;}
+.buttonEdit {margin: 4px 4px;font-size: 14px;padding: 2px;width: 60px;}
+.buttonFire {margin: 1px;padding: 3px;font-size: 14px;}
+.checkbox+.checkbox,.radio+.radio{margin-top: 0px;}
+
+
+
+input[type=checkbox], input[type=radio] {
+    margin: 0px 0 0;
+    margin-top: 1px\9;
+    line-height: normal;
+    height: 14px;
+    width: 14px;
+}
+
+
+
+
+
+
+
+
+
+/*Map*/
+
+#map div.gmnoprint[title="Current Location"] {
+  box-shadow: inset 0 0 5px #06f, inset 0 0 5px #06f, inset 0 0 5px #06f, 0 0 5px #06f,       0 0 5px #06f,       0 0 5px #06f;
+  margin: -18px 0 0 -18px;
+  height: 51px !important;
+  width: 51px !important;
+  border: 1pt solid #fff;
+  border-radius: 51px;
+  animation: pulsate 1.5s ease-in-out infinite;
+  transform: translateZ(0);
+}
+#map div.gmnoprint[title="Current Location"] img {
+  display: none;
+}
+
+@keyframes pulsate {
+  from {
+    transform: scale(0.3) translateZ(0);
+    opacity: 1.0;
+  }
+  95% {
+    transform: scale(1.3) translateZ(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(0.3) translateZ(0);
+    opacity: 0;
+  }
+}
+/* compensate for iPhone and Android devices with high DPI, add iPad media query */
+@media only screen and (-webkit-min-device-pixel-ratio: 1.5), only screen and (device-width: 768px) {
+  #map div.gmnoprint[title="Current Location"] {
+    margin: -10px 0 0 -10px;
+  }
+}
+#progress {
+  pointer-events: none;
+  display: block;
+}
+#progress .arc text {
+  text-shadow: white -1px -1px 0px, white  1px -1px 0px, white -1px  1px 0px, white  1px  1px 0px;
+}
+#progress .arc.time path {
+  fill: rgba(200, 0, 0, 0.5);
+}
+#progress .arc.space path {
+  fill: rgba(0, 0, 200, 0.5);
+}
+
+#codepen-footer {
+  opacity: 0.5;
+}
+
+html, body {
+  font: 10px sans-serif;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  color: black;
+  font-family: arial,sans-serif;
+  font-size: 13px;
+  background-color: #f7f7f7;
+}
+
+#map {
+  position: relative;
+    /* top: 0; */
+    /* bottom: 0; */
+    left: 0;
+    right: 50%;
+    height: 500px;
+        width: 50%;
+            display: inline-block;
+}
+
+#panel-wpr {
+  position: relative;
+  top: 0;
+  bottom: 0;
+  left: 0%;
+  right: 0;
+  overflow: auto;
+}
+
+#panel {
+  font-family: arial;
+  padding: 0 5px;
+  width: 49%;
+    display: inline-block;
+}
+
+#info {
+  padding: 5px;
+}
+
+#from, #to {
+  width: 90%;
+  font-size: 1.2em;
+}
+
+.adp-directions {
+  width: 100%;
+}
+
+.input {
+  background-color: white;
+  padding-left: 8px;
+  border: 1px solid #D9D9D9;
+  border-top: 1px solid silver;
+  -webkit-border-radius: 1px;
+  -moz-border-radius: 1px;
+  border-radius: 1px;
+}
+
+.time {
+  margin: 0;
+  height: 17px;
+  border: 1px solid;
+  border-top-color: #CCC;
+  border-right-color: #999;
+  border-left-color: #999;
+  border-bottom-color: #CCC;
+  padding: 2px 15px 1px 1px;
+}
+
+button {
+  border: 1px solid #3079ED;
+  color: white;
+  background-color: #4D90FE;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#4D90FE), to(#4787ED));
+  background-image: -webkit-linear-gradient(top, #4D90FE, #4787ED);
+  background-image: -moz-linear-gradient(top, #4D90FE, #4787ED);
+  background-image: -ms-linear-gradient(top, #4D90FE, #4787ED);
+  background-image: -o-linear-gradient(top, #4D90FE, #4787ED);
+  background-image: linear-gradient(to bottom, #4d90fe, #4787ed);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorStr='#4d90fe',EndColorStr='#4787ed');
+  display: inline-block;
+  min-width: 54px;
+  text-align: center;
+  font-weight: bold;
+  padding: 0 8px;
+  line-height: 27px;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  border-radius: 2px;
+  -webkit-transition: all 0.218s;
+  -moz-transition: all 0.218s;
+  -o-transition: all 0.218s;
+  transition: all 0.218s;
+}
+
+#info div {
+  line-height: 22px;
+  font-size: 110%;
+}
+
+#panel-wpr {
+  border-left: 1px solid #e6e6e6;
+}
+
+#info {
+  border-bottom: 1px solid #E6E6E6;
+  margin-bottom: 5px;
+}
+
+h2 {
+  margin: 0;
+  padding: 0;
+}
+/*End Map*/
+
+
+@media (min-width: 768px){
+.navbar-nav {
+    float: right;
+    margin: 0;
+}
+.navbar-header, .nav, .navbar-nav, .navbar-toggle, .navbar-collapse, .red{
+	background-color: #990000;
+}
+
+.navbar-default .navbar-brand {
+    color: whitesmoke;
+}
+
+.navbar-default .navbar-nav>li>a {
+    color: whitesmoke;
+}
+
+.space {
+	margin-right: 15px;
+}
+
+.leftButton {
+	margin-right: 65px;
+}
+}

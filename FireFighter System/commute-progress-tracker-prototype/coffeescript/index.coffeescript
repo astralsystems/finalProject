@@ -1,0 +1,232 @@
+window.debug = !!location.hash.length
+
+Array::flatten = window.Array::flatten = ->
+  @reduce (flatten = (a, b) ->
+    a = [a]      unless a instanceof Array
+    b = b.flatten()  if b instanceof Array
+    a.concat b), []
+
+# d3:
+
+width  = 200
+height = 200
+radius = Math.min(width, height) >> 1
+
+timeArc  = d3.svg.arc().outerRadius(radius - 10).innerRadius(radius - 40)
+spaceArc = d3.svg.arc().outerRadius(radius - 40).innerRadius(radius - 70)
+pie      = d3.layout.pie().sort(null).value (d) -> d.duration
+
+drawArcs = ->
+  svg = d3.select('#progress')
+    .append('svg').attr('width', width).attr('height', height)
+    .append('g').attr('transform', "translate(#{width>>1},#{height>>1})")
+
+  [{ title: 'time',  progress: 0.75, arc: timeArc  },
+   { title: 'space', progress: 0.80, arc: spaceArc }].forEach (d, i, all) ->
+    arc = d.arc
+    g = svg.selectAll(".arc.#{d.title}")
+      .data(pie([{ duration: d.progress }, { duration: 1-d.progress }]))
+      .enter()
+        .append('g').classed("arc #{d.title}", true)
+    g.append('path').attr('d', arc).style 'fill', (d, i) -> 'transparent'  if i
+
+    g.append('text').attr('transform', (d) -> 
+                          "translate(#{arc.centroid(d)})"
+    ).attr('dy', '.35em').style('text-anchor', 'middle')
+     .text -> d.title
+
+
+query = do ->
+  data = {}
+  location.search.replace(/\+/g, '%20').split('&').forEach (kv) ->
+    kv = /^\??([^=]*)=(.*)/.exec(kv)
+    return  unless kv
+    [x, k, v] = kv
+    data[try decodeURIComponent k] = try decodeURIComponent v
+    null
+  data
+
+$ = (id) -> document.getElementById id
+['from', 'to'].forEach (x) ->
+  $(x).value = query[x]  if query[x]
+
+
+# google maps:
+
+GM      = window.GM = google.maps
+GMEvent = window.GMEvent = GM.event
+LatLng  = window.LatLng = GM.LatLng
+meters  = GM.geometry.spherical.computeDistanceBetween
+clutter = window.clutter = []
+map_div = $('map')
+
+center_at    = new LatLng(51.538551, -0.016633)
+directions   = window.directions = new GM.DirectionsService
+renderer     = window.renderer = new GM.DirectionsRenderer
+hypothenuse  = (x, y) -> Math.sqrt x*x + y*y
+blue_dot     = new GM.MarkerImage 'http://johan.github.com/GeoLocateMe/bluedot.png',
+      				   null, null, new GM.Point(9, 9), new GM.Size(17, 17)
+transitLayer = map = px_p_m = kdtree = cur_loc = geo = null
+
+window.LL = LL = (x) -> new LatLng x[0], x[1]
+window.ll = ll = (x) -> [x.lat(), x.lng()]
+
+plot = window.plot = (at, icon) ->
+  at = LL at  if at.length
+  icon = undefined  unless typeof icon is 'object'
+  icon = new GM.Marker map: map, position: at, icon: icon
+  clutter.push icon
+  icon
+
+ok = (e) ->
+  at = e.coords
+  lat = at.latitude;
+  lng = at.longitude;
+  acc = at.accuracy;
+  console.log "at #{lat.toFixed(5)},#{lng.toFixed(5)} ± #{acc}m"
+  pos lat, lng, acc
+
+pos = (lat, lng, acc) ->
+  if typeof lat is 'object'
+    here = lat
+  else
+    here = new LatLng lat, lng
+  if cur_loc
+    cur_loc.setPosition here
+  else
+    cur_loc = window.cur_loc = new GM.Marker
+      position: here, title: 'Current Location',
+      icon: blue_dot, map: map, flat: true, optimized: false
+
+mousemove = (e) ->
+  window.e = e
+  at = window.at = e.latLng
+  window.hovered = hovered = ll at
+  return  unless kdtree
+  window.nearest = nearest = kdtree.getNearestNeighbour hovered
+  cur_loc.setPosition(LL nearest)  if cur_loc
+#  window.further = further = kdtree.getNearestNeighbours(hovered, 2)[1]
+#  clutter.push new GM.Polyline map: map, path: [hovered, nearest].map(LL), strokeColor: '#0000ff', strokeOpacity: 0.5
+#  clutter.push new GM.Polyline map: map, path: [hovered, further].map(LL), strokeColor: '#ff0000', strokeOpacity: 0.5
+  undefined
+
+GMEvent.addDomListener window, 'load', init = ->
+  mapOptions = zoom: 14, mapTypeId: GM.MapTypeId.ROADMAP # , center: center_at
+  map = window.map = new GM.Map $('map'), mapOptions
+  GMEvent.addListener map, 'zoom_changed', -> GMEvent.addListenerOnce map, 'bounds_changed', updatePath
+  GMEvent.addDomListener map, 'mousemove', mousemove
+  GMEvent.addDomListener $('go'), 'click', route
+
+  # navigator.geolocation.clearWatch geo
+  geo = navigator.geolocation.watchPosition ok #, fail
+
+  input = $('from')
+  autocomplete = new GM.places.Autocomplete(input)
+  autocomplete.bindTo 'bounds', map
+
+  transitLayer = new GM.TransitLayer
+  map.controls[GM.ControlPosition.RIGHT_BOTTOM].push arcs = $('progress')
+  map.controls[GM.ControlPosition.TOP_RIGHT].push control = $('transit-wpr')
+  GMEvent.addDomListener control, 'click', ->
+    transitLayer.setMap (if transitLayer.getMap() then null else map)
+
+  addDepartures()
+  route()
+  drawArcs()
+
+addDepartures = ->
+  at = $('depart')
+  h = 0
+  while h < 24
+    m = 0
+    while m < 60
+      hh = if h < 10 then "0#{h}" else h
+      mm = if m < 10 then "0#{m}" else m
+      at.innerHTML += "<option>#{hh}:#{mm}</option>"
+      m += 15
+    h++
+
+route = ->
+  departure = $('depart').value
+  now = new Date
+  tzOffset = (now.getTimezoneOffset() + 60) * 60e3
+  hhmm = departure.split(':')
+  time = new Date
+  time.setHours   hhmm[0]
+  time.setMinutes hhmm[1]
+  ms = time.getTime() - tzOffset
+  ms += 24 * 60 * 60e3  if ms < now.getTime()
+  departureTime = new Date ms
+  request =
+    origin:      $('from').value
+    destination: $('to').value
+    travelMode:  GM.DirectionsTravelMode.TRANSIT
+    provideRouteAlternatives: true
+    transitOptions:
+      departureTime: departureTime
+
+  $('panel').innerHTML = ''
+  directions.route request, (response, status) ->
+    window.response = response
+    window.mystatus = status
+    updatePath 'new', (if status is GM.DirectionsStatus.OK then response else null)
+
+updatePath = (action, data) ->
+  console.log 'updatePath'
+  if action is 'new'
+    if data is null
+      renderer.setMap null
+      renderer.setPanel null
+    else        
+      renderer.setMap   map
+      renderer.setPanel $('panel')
+      renderer.setDirections data
+      leg = window.leg = response.routes[0].legs[0]
+      pos leg.start_location
+      updateInterpolator leg
+  else
+    updateInterpolator window.leg = leg  if leg
+
+updateInterpolator = () ->
+  console.log 'updateInterpolator'
+  bounds = map.getBounds()
+  return setTimeout updateInterpolator, 100  unless bounds # FIXME?
+
+  # how many pixels per meter, for the current map zoom level?
+  px_p_m = hypothenuse(map_div.offsetWidth, map_div.offsetHeight) /
+           meters(bounds.getSouthWest(), bounds.getNorthEast())
+
+  px   = 2
+  min  = px / px_p_m
+  uniq = {}
+
+  orig = [] # ordered uniquified latlng array, as given to us
+  leg.steps.map((x) -> x.lat_lngs).flatten().forEach (x) ->
+    if (uniq[x+''] ?= true) ? false
+      orig.push x
+
+  # ditto, but padded out to one for every 5px
+  path = orig.reduce (a, p2) ->
+    a  = [a]  unless a instanceof Array
+    p1 = a[a.length - 1]
+    dist = meters p1, p2
+    if dist <= min
+      mid = []
+    else
+      segments = Math.floor dist / min
+      dx = (p2.lng() - p1_lng = p1.lng()) / segments
+      dy = (p2.lat() - p1_lat = p1.lat()) / segments
+      mid = (new LatLng(p1_lat + dy * n, p1_lng + dx * n)  for n in [1..segments])
+    a.concat mid, p2
+
+  # clean up
+  clutter = window.clutter = clutter.filter (x) ->
+    if x is cur_loc
+      true
+    else
+      x.setMap null
+
+  window.before = before = orig.map ll
+  window.coords = coords = path.map ll
+  window.kdtree = kdtree = new KDTree coords
+  before.map plot  if window.debug

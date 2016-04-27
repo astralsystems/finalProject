@@ -1,0 +1,158 @@
+
+
+/** Fonts */
+@font-face {
+  font-family: "San Francisco";
+  font-weight: 700;
+  src: url("https://applesocial.s3.amazonaws.com/assets/styles/fonts/sanfrancisco/sanfranciscodisplay-thin-webfont.woff");
+}
+
+* {
+    font-family: "San Francisco";   
+}
+
+.fontsize16{font-size:16px;}
+.fontsize20{font-size:20px;}
+
+
+
+
+
+nav .navbar-nav {
+    float: right;
+}
+
+
+.surveyData h3, .surveyData h4{
+	text-align: center;
+}
+
+.marginBottomZero{margin-bottom: 0px;}
+
+
+
+.center{text-align: center;}
+
+#homepagePic { width: 400px;
+}
+
+div.tableEdit {
+	margin-bottom: 40px;
+}
+
+body {
+    margin-top: 70px;
+}
+
+.navbar-fixed-top .nav {
+    padding: 15px 0;
+}
+
+.img-responsive{
+	height: auto;
+	width: auto;
+	margin-top: 5px;
+  margin-left: 5px;
+	max-height: 200%;
+  max-width: auto;
+		
+	padding-top: 0;
+	padding-bottom: 0;
+}
+
+.center-table
+{
+  margin: 0 auto !important;
+  float: none !important;
+}
+
+td{
+	padding: 40px;
+}
+
+th.center {
+	text-align: center;
+}
+
+h3.specialH3 {
+	text-align: center;
+	padding-bottom: 5px;
+}
+
+#morelinks ul{
+	list-style-type: none;
+    padding-top: 10px;
+}
+#morelinks li{
+	display: inline;
+}
+
+.current-phase {
+   color:#00C940;
+}
+
+
+.hoverable:hover {
+  transform: scale(1.009);
+  cursor: pointer;
+}
+
+
+
+
+.person {
+  text-align: center;  
+}
+
+
+
+.person span {
+  display: block;
+ 
+}
+.picture {
+  border-radius: 60%;
+  text-align: center;
+  margin: auto;
+  max-width: 75%;
+  height: auto;
+  transition: 0.1s transform ease-in-out;
+}
+
+.picture:hover {
+  transform: scale(1.05);
+  cursor: pointer;
+}
+
+
+@media only screen and (max-width : 768px) {
+nav .navbar-nav {
+    float: left;
+}
+}
+
+
+@media (max-width: 768px) { 
+    .navbar-brand {
+        padding: 0;        
+    }
+
+    .navbar-brand img {
+        margin-top: 5px;
+        margin-left: 5px;
+		max-height: 75%;
+		max-width: auto;
+		overflow: visible;
+		padding-top: 0;
+		padding-bottom: 0;
+    }
+}
+.navbar-inverse .navbar-nav>li>a {
+    color: #FFF;
+	    font-size: 16px;
+}
+
+.navbar-inverse .navbar-nav>li>a:focus, .navbar-inverse .navbar-nav>li>a:hover {
+    color: #9d9d9d;
+	}
+
